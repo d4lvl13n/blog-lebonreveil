@@ -1,5 +1,7 @@
 // Utility functions
 
+import { decodeHtmlEntities } from "./seo";
+
 /**
  * Format a date string to French locale (ex: "31 mars 2026")
  */
@@ -38,7 +40,7 @@ export function extractToc(html: string): { toc: TocEntry[]; htmlWithIds: string
   const htmlWithIds = html.replace(
     /<(h[23])([^>]*)>(.*?)<\/h[23]>/gi,
     (match, tag: string, attrs: string, inner: string) => {
-      const text = inner.replace(/<[^>]*>/g, "").trim();
+      const text = decodeHtmlEntities(inner.replace(/<[^>]*>/g, "")).trim();
       let baseId = slugify(text);
 
       // Deduplicate ids

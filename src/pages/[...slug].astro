@@ -22,6 +22,7 @@ import {
   buildCanonical,
   buildOgImageUrl,
   stripHtml,
+  decodeHtmlEntities,
 } from "../lib/seo";
 import { formatDate, estimateReadingTime, extractToc } from "../lib/utils";
 
@@ -49,10 +50,14 @@ const relatedPosts = category
 const { toc, htmlWithIds } = extractToc(post.content);
 const readingTime = estimateReadingTime(post.content);
 
-// SEO
-const seoTitle = post.seo?.title ?? post.title;
-const seoDesc = post.seo?.metaDesc ?? stripHtml(post.excerpt).slice(0, 160);
-const title = buildTitle(seoTitle);
+// SEO — use Yoast title as-is (it already includes site name), fallback to our template
+const seoTitle = post.seo?.title
+  ? decodeHtmlEntities(post.seo.title)
+  : buildTitle(post.title);
+const seoDesc = post.seo?.metaDesc
+  ? decodeHtmlEntities(post.seo.metaDesc)
+  : stripHtml(post.excerpt).slice(0, 160);
+const title = seoTitle;
 const description = seoDesc;
 const canonical = buildCanonical(`/${post.slug}`);
 const ogImage = buildOgImageUrl(post);
