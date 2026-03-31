@@ -1,0 +1,48 @@
+---
+/**
+ * ArticleCard — post card for listing pages.
+ * Displays: featured image, category, title, excerpt, date.
+ */
+import type { WPPostSummary } from "../lib/wordpress";
+import { formatDate } from "../lib/utils";
+import { stripHtml } from "../lib/seo";
+
+interface Props {
+  post: WPPostSummary;
+}
+
+const { post } = Astro.props;
+const category = post.categories.nodes[0];
+const excerpt = stripHtml(post.excerpt).slice(0, 160);
+const image = post.featuredImage?.node;
+---
+
+<article class="group">
+  <a href={`/${post.slug}/`} class="block">
+    {image && (
+      <div class="mb-3 overflow-hidden rounded-lg">
+        <img
+          src={image.sourceUrl}
+          alt={image.altText || post.title}
+          width={image.mediaDetails?.width ?? 800}
+          height={image.mediaDetails?.height ?? 450}
+          loading="lazy"
+          decoding="async"
+          class="aspect-video w-full object-cover transition-transform duration-200 group-hover:scale-[1.02]"
+        />
+      </div>
+    )}
+    {category && (
+      <span class="text-xs font-semibold uppercase tracking-wide text-accent-600">
+        {category.name}
+      </span>
+    )}
+    <h2 class="mt-1 text-lg font-bold leading-snug text-brand-900 group-hover:text-accent-600 transition-colors">
+      {post.title}
+    </h2>
+    <p class="mt-1 text-sm leading-relaxed text-brand-600">{excerpt}</p>
+    <time datetime={post.date} class="mt-2 block text-xs text-brand-400">
+      {formatDate(post.date)}
+    </time>
+  </a>
+</article>

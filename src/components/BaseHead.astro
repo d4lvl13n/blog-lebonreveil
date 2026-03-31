@@ -1,0 +1,90 @@
+---
+/**
+ * BaseHead — renders the full <head> for every page.
+ * Handles: charset, viewport, title, meta description, canonical,
+ * Open Graph, Twitter Card, JSON-LD, preconnect, font preload.
+ */
+import { siteConfig } from "../config/site";
+
+interface Props {
+  title: string;
+  description: string;
+  canonical: string;
+  ogImage?: string;
+  ogType?: "website" | "article";
+  publishedTime?: string;
+  modifiedTime?: string;
+  section?: string;
+  jsonLd?: Record<string, unknown>[];
+  prevUrl?: string | null;
+  nextUrl?: string | null;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = `${siteConfig.url}${siteConfig.ogImage}`,
+  ogType = "website",
+  publishedTime,
+  modifiedTime,
+  section,
+  jsonLd = [],
+  prevUrl,
+  nextUrl,
+} = Astro.props;
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonical} />
+
+{/* Favicon */}
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+{/* Preconnect to WP for images */}
+<link rel="preconnect" href={import.meta.env.WORDPRESS_GRAPHQL_URL?.replace("/graphql", "") ?? "https://cms.lebonreveil.com"} />
+
+{/* Font preload — Inter from Google Fonts */}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  rel="preload"
+  as="style"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+/>
+<link
+  rel="stylesheet"
+  href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+/>
+
+{/* Open Graph */}
+<meta property="og:type" content={ogType} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={ogImage} />
+<meta property="og:url" content={canonical} />
+<meta property="og:site_name" content={siteConfig.name} />
+<meta property="og:locale" content={siteConfig.locale} />
+
+{/* Twitter Card */}
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={ogImage} />
+
+{/* Article meta */}
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+{modifiedTime && <meta property="article:modified_time" content={modifiedTime} />}
+{section && <meta property="article:section" content={section} />}
+
+{/* Pagination */}
+{prevUrl && <link rel="prev" href={prevUrl} />}
+{nextUrl && <link rel="next" href={nextUrl} />}
+
+{/* JSON-LD structured data */}
+{jsonLd.map((schema) => (
+  <script type="application/ld+json" set:html={JSON.stringify(schema)} />
+))}

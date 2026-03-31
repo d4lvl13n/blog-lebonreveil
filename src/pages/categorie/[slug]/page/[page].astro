@@ -1,0 +1,90 @@
+---
+/**
+ * Category pagination — /categorie/[slug]/page/[n]/
+ */
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../../../components/Breadcrumbs.astro";
+import ArticleCard from "../../../../components/ArticleCard.astro";
+import Pagination from "../../../../components/Pagination.astro";
+import { siteConfig } from "../../../../config/site";
+import { fetchAllCategories, fetchAllPosts } from "../../../../lib/wordpress";
+import { paginate } from "../../../../lib/utils";
+import {
+  organizationJsonLd,
+  breadcrumbJsonLd,
+  buildTitle,
+  buildCanonical,
+} from "../../../../lib/seo";
+
+export async function getStaticPaths() {
+  const categories = await fetchAllCategories();
+  const allPosts = await fetchAllPosts();
+  const paths: { params: { slug: string; page: string }; props: { category: typeof categories[0] } }[] = [];
+
+  for (const cat of categories) {
+    const catPosts = allPosts.filter((p) =>
+      p.categories.nodes.some((c) => c.slug === cat.slug),
+    );
+    const totalPages = Math.ceil(catPosts.length / siteConfig.postsPerPage);
+    for (let i = 2; i <= totalPages; i++) {
+      paths.push({
+        params: { slug: cat.slug, page: String(i) },
+        props: { category: cat },
+      });
+    }
+  }
+
+  return paths;
+}
+
+const { page } = Astro.params;
+const { category } = Astro.props;
+const currentPage = Number(page);
+const categories = await fetchAllCategories();
+
+const allPosts = await fetchAllPosts();
+const categoryPosts = allPosts.filter((p) =>
+  p.categories.nodes.some((c) => c.slug === category.slug),
+);
+const baseUrl = `/categorie/${category.slug}/`;
+const { items: posts, pagination } = paginate(categoryPosts, currentPage, siteConfig.postsPerPage, baseUrl);
+
+const title = buildTitle(`${category.name} - Page ${currentPage}`);
+const description = `Articles sur ${category.name}, page ${currentPage}.`;
+const canonical = buildCanonical(`${baseUrl}page/${currentPage}`);
+
+const breadcrumbItems = [
+  { name: "Blog", url: siteConfig.url + "/" },
+  { name: category.name, url: siteConfig.url + baseUrl },
+  { name: `Page ${currentPage}` },
+];
+
+const jsonLd = [
+  organizationJsonLd(),
+  breadcrumbJsonLd(breadcrumbItems),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={jsonLd}
+  categories={categories}
+  prevUrl={pagination.prevUrl}
+  nextUrl={pagination.nextUrl}
+>
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-brand-900">{category.name} - Page {currentPage}</h1>
+  </header>
+
+  <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {posts.map((post) => (
+      <ArticleCard post={post} />
+    ))}
+  </div>
+
+  <Pagination pagination={pagination} baseUrl={baseUrl} />
+</BaseLayout>

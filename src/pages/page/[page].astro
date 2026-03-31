@@ -1,0 +1,53 @@
+---
+/**
+ * Homepage pagination — /page/2/, /page/3/, etc.
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import Pagination from "../../components/Pagination.astro";
+import { siteConfig } from "../../config/site";
+import { fetchAllPosts, fetchAllCategories } from "../../lib/wordpress";
+import { paginate } from "../../lib/utils";
+import { organizationJsonLd, webSiteJsonLd, buildTitle, buildCanonical } from "../../lib/seo";
+
+export async function getStaticPaths() {
+  const allPosts = await fetchAllPosts();
+  const totalPages = Math.ceil(allPosts.length / siteConfig.postsPerPage);
+  // Page 1 is handled by index.astro, start from 2
+  return Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) => ({
+    params: { page: String(i + 2) },
+  }));
+}
+
+const { page } = Astro.params;
+const currentPage = Number(page);
+
+const allPosts = await fetchAllPosts();
+const categories = await fetchAllCategories();
+const { items: posts, pagination } = paginate(allPosts, currentPage, siteConfig.postsPerPage, "/");
+
+const title = buildTitle(`Blog - Page ${currentPage}`);
+const description = `${siteConfig.description} Page ${currentPage}.`;
+const canonical = buildCanonical(`/page/${currentPage}`);
+const jsonLd = [organizationJsonLd(), webSiteJsonLd()];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={jsonLd}
+  categories={categories}
+  prevUrl={pagination.prevUrl}
+  nextUrl={pagination.nextUrl}
+>
+  <h1 class="mb-8 text-3xl font-bold text-brand-900">Blog - Page {currentPage}</h1>
+
+  <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {posts.map((post) => (
+      <ArticleCard post={post} />
+    ))}
+  </div>
+
+  <Pagination pagination={pagination} baseUrl="/" />
+</BaseLayout>

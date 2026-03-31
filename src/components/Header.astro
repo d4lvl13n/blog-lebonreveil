@@ -1,0 +1,43 @@
+---
+/**
+ * Header — minimal navigation with logo and category links.
+ * Categories are passed as props (fetched at build time by the page).
+ */
+import { siteConfig } from "../config/site";
+
+interface Props {
+  categories?: { name: string; slug: string }[];
+}
+
+const { categories = [] } = Astro.props;
+---
+
+<header class="border-b border-brand-200 bg-white">
+  <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4" aria-label="Navigation principale">
+    <a href="/" class="text-xl font-bold text-brand-900 hover:text-accent-600 transition-colors">
+      {siteConfig.name}
+    </a>
+    {categories.length > 0 && (
+      <ul class="hidden gap-6 md:flex" role="list">
+        {categories.map((cat) => (
+          <li>
+            <a
+              href={`/categorie/${cat.slug}/`}
+              class="text-sm font-medium text-brand-600 hover:text-brand-900 transition-colors"
+            >
+              {cat.name}
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+    <a
+      href={siteConfig.shopUrl}
+      class="text-sm font-medium text-accent-600 hover:text-accent-700 transition-colors"
+      target="_blank"
+      rel="noopener"
+    >
+      Boutique
+    </a>
+  </nav>
+</header>

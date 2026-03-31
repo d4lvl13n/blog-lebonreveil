@@ -1,0 +1,144 @@
+---
+/**
+ * Article page — single post with full SEO, TOC, related posts.
+ * Route: /post-slug/
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import TableOfContents from "../components/TableOfContents.astro";
+import RelatedPosts from "../components/RelatedPosts.astro";
+import { siteConfig } from "../config/site";
+import {
+  fetchAllPostSlugs,
+  fetchPostBySlug,
+  fetchRelatedPosts,
+  fetchAllCategories,
+} from "../lib/wordpress";
+import {
+  articleJsonLd,
+  breadcrumbJsonLd,
+  organizationJsonLd,
+  buildTitle,
+  buildCanonical,
+  buildOgImageUrl,
+  stripHtml,
+} from "../lib/seo";
+import { formatDate, estimateReadingTime, extractToc } from "../lib/utils";
+
+export async function getStaticPaths() {
+  const slugs = await fetchAllPostSlugs();
+  return slugs.map(({ slug }) => ({
+    params: { slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const post = await fetchPostBySlug(slug as string);
+
+if (!post) {
+  return Astro.redirect("/404/");
+}
+
+const categories = await fetchAllCategories();
+const category = post.categories.nodes[0];
+const relatedPosts = category
+  ? await fetchRelatedPosts(category.slug, post.slug, 4)
+  : [];
+
+// Extract TOC and inject heading IDs
+const { toc, htmlWithIds } = extractToc(post.content);
+const readingTime = estimateReadingTime(post.content);
+
+// SEO
+const seoTitle = post.seo?.title ?? post.title;
+const seoDesc = post.seo?.metaDesc ?? stripHtml(post.excerpt).slice(0, 160);
+const title = buildTitle(seoTitle);
+const description = seoDesc;
+const canonical = buildCanonical(`/${post.slug}`);
+const ogImage = buildOgImageUrl(post);
+
+const breadcrumbItems = [
+  { name: "Blog", url: siteConfig.url + "/" },
+  ...(category
+    ? [{ name: category.name, url: `${siteConfig.url}/categorie/${category.slug}/` }]
+    : []),
+  { name: post.title },
+];
+
+const jsonLd = [
+  organizationJsonLd(),
+  articleJsonLd(post),
+  breadcrumbJsonLd(breadcrumbItems),
+];
+
+const image = post.featuredImage?.node;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  ogImage={ogImage}
+  ogType="article"
+  publishedTime={post.date}
+  modifiedTime={post.modified}
+  section={category?.name}
+  jsonLd={jsonLd}
+  categories={categories}
+>
+  <article class="mx-auto max-w-3xl">
+    <Breadcrumbs items={breadcrumbItems} />
+
+    <header class="mb-8">
+      {category && (
+        <a
+          href={`/categorie/${category.slug}/`}
+          class="text-xs font-semibold uppercase tracking-wide text-accent-600"
+        >
+          {category.name}
+        </a>
+      )}
+      <h1 class="mt-2 text-3xl font-bold leading-tight text-brand-950 md:text-4xl">
+        {post.title}
+      </h1>
+      <div class="mt-3 flex items-center gap-3 text-sm text-brand-500">
+        <time datetime={post.date}>{formatDate(post.date)}</time>
+        {post.modified !== post.date && (
+          <span>
+            (mis à jour le <time datetime={post.modified}>{formatDate(post.modified)}</time>)
+          </span>
+        )}
+        <span>&middot;</span>
+        <span>{readingTime} min de lecture</span>
+      </div>
+    </header>
+
+    {image && (
+      <img
+        src={image.sourceUrl}
+        alt={image.altText || post.title}
+        width={image.mediaDetails?.width ?? 1200}
+        height={image.mediaDetails?.height ?? 630}
+        loading="eager"
+        decoding="async"
+        class="mb-8 w-full rounded-lg"
+      />
+    )}
+
+    <TableOfContents entries={toc} />
+
+    <div class="prose" set:html={htmlWithIds} />
+
+    {post.tags.nodes.length > 0 && (
+      <div class="mt-8 flex flex-wrap gap-2">
+        {post.tags.nodes.map((tag) => (
+          <span class="rounded-full bg-brand-100 px-3 py-1 text-xs text-brand-600">
+            {tag.name}
+          </span>
+        ))}
+      </div>
+    )}
+
+    <RelatedPosts posts={relatedPosts} />
+  </article>
+</BaseLayout>

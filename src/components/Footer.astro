@@ -1,0 +1,19 @@
+---
+import { siteConfig } from "../config/site";
+---
+
+<footer class="mt-16 border-t border-brand-200 bg-white">
+  <div class="mx-auto max-w-5xl px-4 py-8">
+    <div class="flex flex-col items-center justify-between gap-4 text-sm text-brand-500 sm:flex-row">
+      <p>&copy; {new Date().getFullYear()} {siteConfig.name}. Tous droits réservés.</p>
+      <div class="flex gap-6">
+        <a href={siteConfig.shopUrl} class="hover:text-brand-700 transition-colors" target="_blank" rel="noopener">
+          Boutique
+        </a>
+        <a href="/" class="hover:text-brand-700 transition-colors">
+          Blog
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>

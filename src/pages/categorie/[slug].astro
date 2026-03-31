@@ -1,0 +1,84 @@
+---
+/**
+ * Category page — articles filtered by category.
+ * Route: /categorie/[slug]/
+ */
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import ArticleCard from "../../components/ArticleCard.astro";
+import Pagination from "../../components/Pagination.astro";
+import { siteConfig } from "../../config/site";
+import { fetchAllCategories, fetchAllPosts } from "../../lib/wordpress";
+import { paginate } from "../../lib/utils";
+import {
+  organizationJsonLd,
+  breadcrumbJsonLd,
+  buildTitle,
+  buildCanonical,
+} from "../../lib/seo";
+
+export async function getStaticPaths() {
+  const categories = await fetchAllCategories();
+  return categories.map((cat) => ({
+    params: { slug: cat.slug },
+    props: { category: cat },
+  }));
+}
+
+const { category } = Astro.props;
+const categories = await fetchAllCategories();
+
+// Fetch all posts and filter by category (more reliable for static build)
+const allPosts = await fetchAllPosts();
+const categoryPosts = allPosts.filter((p) =>
+  p.categories.nodes.some((c) => c.slug === category.slug),
+);
+const baseUrl = `/categorie/${category.slug}/`;
+const { items: posts, pagination } = paginate(categoryPosts, 1, siteConfig.postsPerPage, baseUrl);
+
+const title = buildTitle(category.name);
+const description = category.description
+  ? category.description.slice(0, 160)
+  : `Tous les articles sur ${category.name}.`;
+const canonical = buildCanonical(baseUrl);
+
+const breadcrumbItems = [
+  { name: "Blog", url: siteConfig.url + "/" },
+  { name: category.name },
+];
+
+const jsonLd = [
+  organizationJsonLd(),
+  breadcrumbJsonLd(breadcrumbItems),
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={jsonLd}
+  categories={categories}
+  nextUrl={pagination.nextUrl}
+>
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <header class="mb-8">
+    <h1 class="text-3xl font-bold text-brand-900">{category.name}</h1>
+    {category.description && (
+      <p class="mt-2 text-brand-600">{category.description}</p>
+    )}
+  </header>
+
+  <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {posts.map((post) => (
+      <ArticleCard post={post} />
+    ))}
+  </div>
+
+  {posts.length === 0 && (
+    <p class="text-brand-500">Aucun article dans cette catégorie.</p>
+  )}
+
+  <Pagination pagination={pagination} baseUrl={baseUrl} />
+</BaseLayout>

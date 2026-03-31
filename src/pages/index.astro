@@ -1,0 +1,44 @@
+---
+/**
+ * Homepage — latest articles grid.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ArticleCard from "../components/ArticleCard.astro";
+import Pagination from "../components/Pagination.astro";
+import { siteConfig } from "../config/site";
+import { fetchAllPosts, fetchAllCategories } from "../lib/wordpress";
+import { paginate } from "../lib/utils";
+import { organizationJsonLd, webSiteJsonLd, buildTitle, buildCanonical } from "../lib/seo";
+
+const allPosts = await fetchAllPosts();
+const categories = await fetchAllCategories();
+const { items: posts, pagination } = paginate(allPosts, 1, siteConfig.postsPerPage, "/");
+
+const title = buildTitle("Blog");
+const description = siteConfig.description;
+const canonical = buildCanonical("/");
+const jsonLd = [organizationJsonLd(), webSiteJsonLd()];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={jsonLd}
+  categories={categories}
+  nextUrl={pagination.nextUrl}
+>
+  <h1 class="mb-8 text-3xl font-bold text-brand-900">Blog</h1>
+
+  <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+    {posts.map((post) => (
+      <ArticleCard post={post} />
+    ))}
+  </div>
+
+  {posts.length === 0 && (
+    <p class="text-brand-500">Aucun article pour le moment.</p>
+  )}
+
+  <Pagination pagination={pagination} baseUrl="/" />
+</BaseLayout>

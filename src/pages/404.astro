@@ -1,0 +1,53 @@
+---
+/**
+ * 404 page — custom not found with links to homepage and categories.
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAllCategories } from "../lib/wordpress";
+import { organizationJsonLd, buildTitle, buildCanonical } from "../lib/seo";
+
+const categories = await fetchAllCategories();
+
+const title = buildTitle("Page introuvable");
+const description = "La page que vous cherchez n'existe pas ou a été déplacée.";
+const canonical = buildCanonical("/404");
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={[organizationJsonLd()]}
+  categories={categories}
+>
+  <div class="mx-auto max-w-lg py-20 text-center">
+    <h1 class="text-6xl font-bold text-brand-300">404</h1>
+    <p class="mt-4 text-lg text-brand-600">Page introuvable</p>
+    <p class="mt-2 text-sm text-brand-500">
+      La page que vous cherchez n'existe pas ou a été déplacée.
+    </p>
+    <div class="mt-8 flex flex-col items-center gap-3">
+      <a
+        href="/"
+        class="rounded-lg bg-brand-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-brand-800 transition-colors"
+      >
+        Retour au blog
+      </a>
+      {categories.length > 0 && (
+        <div class="mt-4">
+          <p class="mb-2 text-sm text-brand-500">Ou explorez nos catégories :</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            {categories.map((cat) => (
+              <a
+                href={`/categorie/${cat.slug}/`}
+                class="rounded-full border border-brand-200 px-3 py-1 text-sm text-brand-600 hover:bg-brand-100 transition-colors"
+              >
+                {cat.name}
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  </div>
+</BaseLayout>

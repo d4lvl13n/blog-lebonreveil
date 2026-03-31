@@ -1,0 +1,76 @@
+---
+/**
+ * Pagination — numbered page links.
+ * Note: rel="prev"/rel="next" are handled in BaseHead via props.
+ */
+import type { PaginationData } from "../lib/utils";
+
+interface Props {
+  pagination: PaginationData;
+  baseUrl: string;
+}
+
+const { pagination, baseUrl } = Astro.props;
+const { currentPage, totalPages } = pagination;
+
+function pageUrl(n: number): string {
+  if (n === 1) return baseUrl;
+  return `${baseUrl}page/${n}/`;
+}
+
+// Show a window of pages around current
+const windowSize = 2;
+const start = Math.max(1, currentPage - windowSize);
+const end = Math.min(totalPages, currentPage + windowSize);
+const pages: number[] = [];
+for (let i = start; i <= end; i++) pages.push(i);
+---
+
+{totalPages > 1 && (
+  <nav aria-label="Pagination" class="mt-10 flex items-center justify-center gap-2">
+    {currentPage > 1 && (
+      <a
+        href={pageUrl(currentPage - 1)}
+        class="rounded px-3 py-2 text-sm text-brand-600 hover:bg-brand-100 transition-colors"
+        aria-label="Page précédente"
+      >
+        &larr;
+      </a>
+    )}
+    {start > 1 && (
+      <>
+        <a href={pageUrl(1)} class="rounded px-3 py-2 text-sm text-brand-600 hover:bg-brand-100">1</a>
+        {start > 2 && <span class="px-1 text-brand-400">...</span>}
+      </>
+    )}
+    {pages.map((n) => (
+      <a
+        href={pageUrl(n)}
+        class:list={[
+          "rounded px-3 py-2 text-sm transition-colors",
+          n === currentPage
+            ? "bg-brand-900 text-white font-semibold"
+            : "text-brand-600 hover:bg-brand-100",
+        ]}
+        aria-current={n === currentPage ? "page" : undefined}
+      >
+        {n}
+      </a>
+    ))}
+    {end < totalPages && (
+      <>
+        {end < totalPages - 1 && <span class="px-1 text-brand-400">...</span>}
+        <a href={pageUrl(totalPages)} class="rounded px-3 py-2 text-sm text-brand-600 hover:bg-brand-100">{totalPages}</a>
+      </>
+    )}
+    {currentPage < totalPages && (
+      <a
+        href={pageUrl(currentPage + 1)}
+        class="rounded px-3 py-2 text-sm text-brand-600 hover:bg-brand-100 transition-colors"
+        aria-label="Page suivante"
+      >
+        &rarr;
+      </a>
+    )}
+  </nav>
+)}

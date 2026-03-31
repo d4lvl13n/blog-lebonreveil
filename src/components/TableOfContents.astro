@@ -1,0 +1,36 @@
+---
+/**
+ * TableOfContents — auto-generated from article headings.
+ * Pure HTML, zero JS. Only renders if there are 3+ headings.
+ */
+interface TocEntry {
+  level: 2 | 3;
+  text: string;
+  id: string;
+}
+
+interface Props {
+  entries: TocEntry[];
+}
+
+const { entries } = Astro.props;
+const show = entries.length >= 3;
+---
+
+{show && (
+  <nav aria-label="Table des matières" class="mb-8 rounded-lg border border-brand-200 bg-white p-5">
+    <p class="mb-3 text-sm font-bold uppercase tracking-wide text-brand-700">Sommaire</p>
+    <ol class="space-y-1 text-sm" role="list">
+      {entries.map((entry) => (
+        <li class={entry.level === 3 ? "ml-4" : ""}>
+          <a
+            href={`#${entry.id}`}
+            class="text-brand-600 hover:text-accent-600 transition-colors"
+          >
+            {entry.text}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}
