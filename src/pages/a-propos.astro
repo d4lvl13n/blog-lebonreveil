@@ -1,0 +1,74 @@
+---
+/**
+ * À propos — présentation de l'autrice Sophie.
+ * Route: /a-propos/
+ */
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { fetchAllCategories } from "../lib/wordpress";
+import { organizationJsonLd, buildTitle, buildCanonical } from "../lib/seo";
+
+const categories = await fetchAllCategories();
+
+const title = buildTitle("À propos");
+const description =
+  "Sophie, rédactrice spécialisée en sommeil et chronobiologie chez Le Bon Réveil. Qui suis-je et pourquoi j'écris sur les réveils et les rituels matinaux.";
+const canonical = buildCanonical("/a-propos");
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  canonical={canonical}
+  jsonLd={[organizationJsonLd()]}
+  categories={categories}
+>
+  <article class="mx-auto max-w-2xl py-10">
+    <header class="mb-10 text-center">
+      <div
+        class="mx-auto mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-brand-100 text-5xl select-none"
+        aria-hidden="true"
+      >
+        🌅
+      </div>
+      <h1 class="text-3xl font-bold text-brand-950">À propos</h1>
+      <p class="mt-2 text-brand-500">Rédactrice spécialisée en sommeil &amp; chronobiologie</p>
+    </header>
+
+    <div class="prose prose-brand mx-auto">
+      <p>
+        Je m'appelle Sophie et j'écris pour <strong>Le Bon Réveil</strong> depuis sa création.
+      </p>
+      <p>
+        Mon obsession, c'est le moment du réveil. Pas le réveil-objet (même si j'en ai testé
+        des dizaines), mais ce qui se passe entre le moment où votre alarme sonne et celui où
+        vous êtes vraiment debout, fonctionnel, de bonne humeur — ou pas.
+      </p>
+      <p>
+        Je ne suis pas médecin du sommeil. Ce que je suis, c'est quelqu'un qui lit les études,
+        teste les produits, et traduit tout ça en conseils concrets. Quand une étude de
+        chronobiologie dit quelque chose d'utile, je vous l'explique sans jargon. Quand un
+        réveil simulateur d'aube ne vaut pas son prix, je vous le dis aussi.
+      </p>
+      <p>
+        Sur ce blog, vous trouverez des guides pratiques, des comparatifs honnêtes, et des avis
+        tranchés sur tout ce qui touche au sommeil et au réveil. Mon parti pris&nbsp;: un bon
+        matin se prépare la veille, et le bon outil ne remplace jamais les bonnes habitudes —
+        mais il peut sacrément les faciliter.
+      </p>
+      <p>
+        Si j'ai un conseil à donner avant tous les autres&nbsp;: réglez votre heure de lever,
+        tenez-la deux semaines, et laissez votre corps faire le reste. Le reste, c'est du
+        détail — et c'est exactement ce qu'on explore ici.
+      </p>
+    </div>
+
+    <div class="mt-10 text-center">
+      <a
+        href="/"
+        class="inline-block rounded-lg bg-brand-900 px-6 py-2.5 text-sm font-medium text-white hover:bg-brand-800 transition-colors"
+      >
+        Lire le blog
+      </a>
+    </div>
+  </article>
+</BaseLayout>

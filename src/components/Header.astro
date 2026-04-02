@@ -15,7 +15,7 @@ const { categories = [] } = Astro.props;
 <header class="border-b border-brand-200 bg-white">
   <nav class="mx-auto flex max-w-5xl items-center justify-between px-4 py-4" aria-label="Navigation principale">
     <a href="/" class="hover:opacity-80 transition-opacity" aria-label={siteConfig.name}>
-      <img src="/logo.svg" alt={siteConfig.name} width="200" height="50" class="h-10 w-auto" />
+      <img src="/logo.svg" alt={siteConfig.name} width="200" height="50" class="h-14 w-auto" />
     </a>
     {categories.length > 0 && (
       <ul class="hidden gap-6 md:flex" role="list">
@@ -31,13 +31,21 @@ const { categories = [] } = Astro.props;
         ))}
       </ul>
     )}
-    <a
-      href={siteConfig.shopUrl}
-      class="text-sm font-medium text-accent-600 hover:text-accent-700 transition-colors"
-      target="_blank"
-      rel="noopener"
-    >
-      Boutique
-    </a>
+    <div class="flex items-center gap-5">
+      <a
+        href="/a-propos/"
+        class="text-sm font-medium text-brand-600 hover:text-brand-900 transition-colors"
+      >
+        À propos
+      </a>
+      <a
+        href={siteConfig.shopUrl}
+        class="text-sm font-medium text-accent-600 hover:text-accent-700 transition-colors"
+        target="_blank"
+        rel="noopener"
+      >
+        Boutique
+      </a>
+    </div>
   </nav>
 </header>

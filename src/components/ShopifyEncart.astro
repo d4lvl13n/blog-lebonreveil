@@ -1,0 +1,59 @@
+---
+/**
+ * ShopifyEncart — fixed product grid shown in every article,
+ * between tags and author bio.
+ */
+
+const products = [
+  {
+    name: "Réveils en Bois",
+    image: "https://lebonreveil.com/cdn/shop/files/reveil-bois-led-naturel-le-bon-reveil-58053875630426.jpg?format=webp&v=1736544964&width=750",
+    url: "https://lebonreveil.com/collections/reveil-bois",
+  },
+  {
+    name: "Réveils Enfants",
+    image: "https://lebonreveil.com/cdn/shop/files/reveil-educatif-pour-enfant-le-bon-reveil-52249271370074.jpg?format=webp&v=1736517182&width=750",
+    url: "https://lebonreveil.com/collections/reveil-enfant",
+  },
+  {
+    name: "Réveils Seniors",
+    image: "https://lebonreveil.com/cdn/shop/files/reveil-simple-pour-senior-le-bon-reveil-51844203577690.jpg?format=webp&v=1749115623&width=750",
+    url: "https://lebonreveil.com/collections/radio-reveil-bois",
+  },
+];
+---
+
+<aside class="my-10" aria-label="Nos sélections">
+  <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-brand-400">Nos sélections</p>
+  <div class="grid grid-cols-3 gap-4">
+    {products.map((product) => (
+      <a
+        href={product.url}
+        target="_blank"
+        rel="noopener"
+        class="group flex flex-col overflow-hidden rounded-xl border border-brand-200 bg-white hover:border-accent-400 hover:shadow-md transition-all"
+      >
+        <div class="aspect-square overflow-hidden bg-brand-50">
+          <img
+            src={product.image}
+            alt={product.name}
+            width="400"
+            height="400"
+            loading="lazy"
+            decoding="async"
+            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
+        <div class="flex flex-col gap-2 p-3">
+          <p class="text-sm font-semibold text-brand-900 leading-tight">{product.name}</p>
+          <span class="inline-flex items-center gap-1 text-xs font-medium text-accent-600 group-hover:text-accent-700">
+            Voir la sélection
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="h-3 w-3">
+              <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd" />
+            </svg>
+          </span>
+        </div>
+      </a>
+    ))}
+  </div>
+</aside>
