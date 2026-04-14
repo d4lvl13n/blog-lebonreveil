@@ -13,6 +13,8 @@ interface Props {
   description: string;
   canonical: string;
   ogImage?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   ogType?: "website" | "article";
   publishedTime?: string;
   modifiedTime?: string;
@@ -34,6 +36,8 @@ const props = Astro.props;
       description={props.description}
       canonical={props.canonical}
       ogImage={props.ogImage}
+      ogImageWidth={props.ogImageWidth}
+      ogImageHeight={props.ogImageHeight}
       ogType={props.ogType}
       publishedTime={props.publishedTime}
       modifiedTime={props.modifiedTime}
@@ -49,5 +53,9 @@ const props = Astro.props;
       <slot />
     </main>
     <Footer />
+    <script>
+      import { inject } from "@vercel/analytics";
+      inject();
+    </script>
   </body>
 </html>

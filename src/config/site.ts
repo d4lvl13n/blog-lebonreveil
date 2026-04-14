@@ -10,4 +10,5 @@ export const siteConfig = {
   ogImage: "/og-default.jpg",
   postsPerPage: 12,
   titleTemplate: "%s | Le Bon Réveil",
+  author: { name: "Sophie", url: "https://blog.lebonreveil.com" },
 } as const;

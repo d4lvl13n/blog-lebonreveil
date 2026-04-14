@@ -12,6 +12,8 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/vercel": "^10.0.4",
+    "@vercel/analytics": "^2.0.1",
     "astro": "^6.1.2"
   },
   "devDependencies": {

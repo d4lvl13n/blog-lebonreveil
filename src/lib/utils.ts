@@ -84,6 +84,69 @@ export interface PaginationData {
   nextUrl: string | null;
 }
 
+/**
+ * Split HTML content at a strategic H2 heading (~60-70% through the article).
+ * Used to insert a product CTA mid-article instead of only at the bottom.
+ * Returns { before, after } — if the article is too short, `after` is empty.
+ */
+export function splitContentAtBreak(html: string): { before: string; after: string } {
+  const h2Regex = /<h2[\s>]/gi;
+  const positions: number[] = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = h2Regex.exec(html)) !== null) {
+    positions.push(match.index);
+  }
+
+  // Need at least 3 H2s to have a meaningful split (intro content + break + remaining)
+  if (positions.length < 3) {
+    return { before: html, after: "" };
+  }
+
+  // Target the H2 closest to 65% of the content length
+  const target = html.length * 0.65;
+  let best = positions[1]; // default: second H2 (skip the first)
+  let bestDist = Math.abs(positions[1] - target);
+
+  for (let i = 2; i < positions.length - 1; i++) {
+    const dist = Math.abs(positions[i] - target);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = positions[i];
+    }
+  }
+
+  return {
+    before: html.slice(0, best),
+    after: html.slice(best),
+  };
+}
+
+/**
+ * Extract FAQ pairs from HTML content.
+ * Looks for an H2 containing "questions fréquentes" or "FAQ",
+ * then collects H3 (question) + P (answer) pairs from that section.
+ */
+export function extractFaq(html: string): { question: string; answer: string }[] {
+  const faqSectionMatch = html.match(
+    /<h2[^>]*>[^<]*(?:questions\s+fr[eé]quentes|faq)[^<]*<\/h2>([\s\S]*?)(?=<h2[\s>]|$)/i,
+  );
+  if (!faqSectionMatch) return [];
+
+  const section = faqSectionMatch[1];
+  const faqs: { question: string; answer: string }[] = [];
+
+  const pairRegex = /<h3[^>]*>([\s\S]*?)<\/h3>\s*(?:<p[^>]*>([\s\S]*?)<\/p>)/gi;
+  let match: RegExpExecArray | null;
+  while ((match = pairRegex.exec(section)) !== null) {
+    const question = decodeHtmlEntities(match[1].replace(/<[^>]+>/g, "")).trim();
+    const answer = decodeHtmlEntities(match[2].replace(/<[^>]+>/g, "")).trim();
+    if (question && answer) faqs.push({ question, answer });
+  }
+
+  return faqs;
+}
+
 export function paginate<T>(
   items: T[],
   page: number,

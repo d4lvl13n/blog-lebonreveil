@@ -20,13 +20,14 @@ import {
   articleJsonLd,
   breadcrumbJsonLd,
   organizationJsonLd,
+  faqJsonLd,
   buildTitle,
   buildCanonical,
   buildOgImageUrl,
   stripHtml,
   decodeHtmlEntities,
 } from "../lib/seo";
-import { formatDate, estimateReadingTime, extractToc } from "../lib/utils";
+import { formatDate, estimateReadingTime, extractToc, splitContentAtBreak, extractFaq } from "../lib/utils";
 
 export async function getStaticPaths() {
   const slugs = await fetchAllPostSlugs();
@@ -52,6 +53,12 @@ const relatedPosts = category
 const { toc, htmlWithIds } = extractToc(post.content);
 const readingTime = estimateReadingTime(post.content);
 
+// Split content at a strategic H2 for mid-article product CTA
+const { before: contentBefore, after: contentAfter } = splitContentAtBreak(htmlWithIds);
+
+// Extract FAQ pairs for FAQPage schema (AEO / rich snippets)
+const faqs = extractFaq(htmlWithIds);
+
 // SEO — use Yoast title as-is (it already includes site name), fallback to our template
 const seoTitle = post.seo?.title
   ? decodeHtmlEntities(post.seo.title)
@@ -76,6 +83,7 @@ const jsonLd = [
   organizationJsonLd(),
   articleJsonLd(post),
   breadcrumbJsonLd(breadcrumbItems),
+  ...(faqs.length > 0 ? [faqJsonLd(faqs, post.modified)] : []),
 ];
 
 const image = post.featuredImage?.node;
@@ -86,6 +94,8 @@ const image = post.featuredImage?.node;
   description={description}
   canonical={canonical}
   ogImage={ogImage}
+  ogImageWidth={post.featuredImage?.node.mediaDetails?.width ?? 1200}
+  ogImageHeight={post.featuredImage?.node.mediaDetails?.height ?? 630}
   ogType="article"
   publishedTime={post.date}
   modifiedTime={post.modified}
@@ -134,7 +144,11 @@ const image = post.featuredImage?.node;
 
     <TableOfContents entries={toc} />
 
-    <div class="prose" set:html={htmlWithIds} />
+    <div class="prose" set:html={contentBefore} />
+
+    {contentAfter && <ShopifyEncart />}
+
+    {contentAfter && <div class="prose" set:html={contentAfter} />}
 
     {post.tags.nodes.length > 0 && (
       <div class="mt-8 flex flex-wrap gap-2">
@@ -145,8 +159,6 @@ const image = post.featuredImage?.node;
         ))}
       </div>
     )}
-
-    <ShopifyEncart />
 
     <AuthorBio />
 

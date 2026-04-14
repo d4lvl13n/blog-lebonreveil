@@ -53,8 +53,9 @@ export function articleJsonLd(post: WPPostFull) {
     datePublished: post.date,
     dateModified: post.modified,
     author: {
-      "@type": "Organization",
-      name: siteConfig.name,
+      "@type": "Person",
+      name: siteConfig.author.name,
+      url: siteConfig.author.url,
     },
     publisher: {
       "@type": "Organization",

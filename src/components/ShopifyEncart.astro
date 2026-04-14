@@ -1,29 +1,52 @@
 ---
 /**
- * ShopifyEncart — fixed product grid shown in every article,
- * between tags and author bio.
+ * ShopifyEncart — product grid shown mid-article.
+ * When the user scrolls past, a compact popup version
+ * appears fixed in the bottom-right corner.
  */
 
 const products = [
   {
-    name: "Réveils en Bois",
-    image: "https://lebonreveil.com/cdn/shop/files/reveil-bois-led-naturel-le-bon-reveil-58053875630426.jpg?format=webp&v=1736544964&width=750",
-    url: "https://lebonreveil.com/collections/reveil-bois",
+    name: "Réveils",
+    image: "https://lebonreveil.com/cdn/shop/files/reveil-bois-led-naturel-le-bon-reveil-51698989891930.webp?v=1736550483&width=750",
+    thumb: "https://lebonreveil.com/cdn/shop/files/reveil-bois-led-naturel-le-bon-reveil-51698989891930.webp?v=1736550483&width=120",
+    url: "https://lebonreveil.com/collections/reveil",
   },
   {
     name: "Réveils Enfants",
     image: "https://lebonreveil.com/cdn/shop/files/reveil-educatif-pour-enfant-le-bon-reveil-52249271370074.jpg?format=webp&v=1736517182&width=750",
+    thumb: "https://lebonreveil.com/cdn/shop/files/reveil-educatif-pour-enfant-le-bon-reveil-52249271370074.jpg?format=webp&v=1736517182&width=120",
     url: "https://lebonreveil.com/collections/reveil-enfant",
   },
   {
-    name: "Réveils Seniors",
-    image: "https://lebonreveil.com/cdn/shop/files/reveil-simple-pour-senior-le-bon-reveil-51844203577690.jpg?format=webp&v=1749115623&width=750",
-    url: "https://lebonreveil.com/collections/radio-reveil-bois",
+    name: "Radios-Réveils",
+    image: "https://lebonreveil.com/cdn/shop/files/radio-reveil-projecteur-bois-le-bon-reveil-52443753742682.webp?v=1736520062&width=750",
+    thumb: "https://lebonreveil.com/cdn/shop/files/radio-reveil-projecteur-bois-le-bon-reveil-52443753742682.webp?v=1736520062&width=120",
+    url: "https://lebonreveil.com/collections/radio-reveil",
+  },
+  {
+    name: "Réveils Lumineux",
+    image: "https://lebonreveil.com/cdn/shop/files/reveil-lumineux-a-piles-le-bon-reveil-53318796738906.jpg?v=1736514242&width=750",
+    thumb: "https://lebonreveil.com/cdn/shop/files/reveil-lumineux-a-piles-le-bon-reveil-53318796738906.jpg?v=1736514242&width=120",
+    url: "https://lebonreveil.com/collections/reveil-lumineux",
+  },
+  {
+    name: "Réveils Connectés",
+    image: "https://lebonreveil.com/cdn/shop/files/radio-reveil-connecte-rechargeable-usb-le-bon-reveil-52440121672026.jpg?v=1736534702&width=750",
+    thumb: "https://lebonreveil.com/cdn/shop/files/radio-reveil-connecte-rechargeable-usb-le-bon-reveil-52440121672026.jpg?v=1736534702&width=120",
+    url: "https://lebonreveil.com/collections/reveil-connecte",
+  },
+  {
+    name: "Réveils Projecteur",
+    image: "https://lebonreveil.com/cdn/shop/files/radio-reveil-projecteur-bois-le-bon-reveil-52443753742682.webp?v=1736520062&width=750",
+    thumb: "https://lebonreveil.com/cdn/shop/files/radio-reveil-projecteur-bois-le-bon-reveil-52443753742682.webp?v=1736520062&width=120",
+    url: "https://lebonreveil.com/collections/reveil-projecteur",
   },
 ];
 ---
 
-<aside class="my-10" aria-label="Nos sélections">
+<!-- Inline version (mid-article) -->
+<aside id="encart-inline" class="my-10" aria-label="Nos sélections">
   <p class="mb-4 text-xs font-semibold uppercase tracking-widest text-brand-400">Nos sélections</p>
   <div class="grid grid-cols-3 gap-4">
     {products.map((product) => (
@@ -57,3 +80,83 @@ const products = [
     ))}
   </div>
 </aside>
+
+<!-- Popup version (bottom-right, compact) -->
+<div
+  id="encart-popup"
+  class="fixed bottom-4 right-4 z-50 hidden w-72 rounded-xl border border-brand-200 bg-white shadow-lg"
+  aria-label="Nos sélections"
+>
+  <div class="flex items-center justify-between border-b border-brand-100 px-4 py-2.5">
+    <p class="text-xs font-semibold uppercase tracking-widest text-brand-400">Nos sélections</p>
+    <button
+      id="encart-close"
+      type="button"
+      class="rounded-md p-1 text-brand-400 hover:bg-brand-100 hover:text-brand-600 transition-colors"
+      aria-label="Fermer"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="h-4 w-4">
+        <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+      </svg>
+    </button>
+  </div>
+  <div class="flex flex-col gap-1 p-2 max-h-72 overflow-y-auto">
+    {products.map((product) => (
+      <a
+        href={product.url}
+        target="_blank"
+        rel="noopener"
+        class="group flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-brand-50 transition-colors"
+      >
+        <img
+          src={product.thumb}
+          alt={product.name}
+          width="40"
+          height="40"
+          loading="lazy"
+          decoding="async"
+          class="h-10 w-10 shrink-0 rounded-md object-cover"
+        />
+        <div class="min-w-0">
+          <p class="text-sm font-medium text-brand-900 leading-tight truncate">{product.name}</p>
+          <span class="text-xs text-accent-600 group-hover:text-accent-700">Voir</span>
+        </div>
+      </a>
+    ))}
+  </div>
+</div>
+
+<script>
+  const inline = document.getElementById("encart-inline");
+  const popup = document.getElementById("encart-popup");
+  const closeBtn = document.getElementById("encart-close");
+  let dismissed = false;
+
+  if (inline && popup && closeBtn) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (dismissed) return;
+        if (!entry.isIntersecting) {
+          popup.classList.remove("hidden");
+          popup.animate(
+            [{ transform: "translateY(1rem)", opacity: 0 }, { transform: "translateY(0)", opacity: 1 }],
+            { duration: 250, easing: "ease-out" },
+          );
+        } else {
+          popup.classList.add("hidden");
+        }
+      },
+      { threshold: 0 },
+    );
+
+    observer.observe(inline);
+
+    closeBtn.addEventListener("click", () => {
+      dismissed = true;
+      popup.animate(
+        [{ transform: "translateY(0)", opacity: 1 }, { transform: "translateY(1rem)", opacity: 0 }],
+        { duration: 200, easing: "ease-in" },
+      ).onfinish = () => popup.classList.add("hidden");
+    });
+  }
+</script>

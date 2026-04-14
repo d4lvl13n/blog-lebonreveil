@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /api/
 
-Sitemap: https://blog.lebonreveil.com/sitemap-index.xml
+Sitemap: https://blog.lebonreveil.com/sitemap.xml

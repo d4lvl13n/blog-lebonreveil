@@ -22,3 +22,13 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+.vercel
+.env*.local
+
+# WP internal linking (credentials + generated plans)
+wp-linking-config.json
+link-plan.json
+link-clusters.json
+link-report.md
+apply-links.py
+wp-internal-linker.py
