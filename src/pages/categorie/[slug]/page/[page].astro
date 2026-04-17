@@ -16,6 +16,8 @@ import {
   buildCanonical,
 } from "../../../../lib/seo";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const categories = await fetchAllCategories();
   const allPosts = await fetchAllPosts();

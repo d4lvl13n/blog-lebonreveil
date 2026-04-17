@@ -10,6 +10,8 @@ import { fetchAllPosts, fetchAllCategories } from "../../lib/wordpress";
 import { paginate } from "../../lib/utils";
 import { organizationJsonLd, webSiteJsonLd, buildTitle, buildCanonical } from "../../lib/seo";
 
+export const prerender = true;
+
 export async function getStaticPaths() {
   const allPosts = await fetchAllPosts();
   const totalPages = Math.ceil(allPosts.length / siteConfig.postsPerPage);
