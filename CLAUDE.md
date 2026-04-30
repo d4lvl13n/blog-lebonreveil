@@ -43,7 +43,7 @@ src/
 
 - **Mock mode** : when `WORDPRESS_GRAPHQL_URL` env var is empty, all WP queries return mock data from `mock-data.ts`. Useful for local dev without WP.
 - **HTML entities** : WordPress returns `&rsquo;`, `&ldquo;`, etc. Use `decodeHtmlEntities()` from `seo.ts` when displaying WP text in meta tags, JSON-LD, or TOC.
-- **Yoast SEO titles** : use as-is (they already include site name). Don't wrap in `buildTitle()`.
+- **SEO titles** : use `post.title` directly (no brand suffix). Brand is carried by `og:site_name`. Yoast title is honored only when customized (i.e. differs from the default `Title - Lebonreveil.com` pattern).
 - **Trailing slash** : always on. Configured in `astro.config.mjs`.
 - **URL structure** : flat for articles (`/post-slug/`), hierarchical for categories (`/categorie/cat-slug/`).
 - **No tag pages** until 50+ articles per tag.

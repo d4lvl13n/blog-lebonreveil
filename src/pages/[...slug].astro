@@ -59,10 +59,16 @@ const { before: contentBefore, after: contentAfter } = splitContentAtBreak(htmlW
 // Extract FAQ pairs for FAQPage schema (AEO / rich snippets)
 const faqs = extractFaq(htmlWithIds);
 
-// SEO — use Yoast title as-is (it already includes site name), fallback to our template
-const seoTitle = post.seo?.title
-  ? decodeHtmlEntities(post.seo.title)
-  : buildTitle(post.title);
+// SEO — use the post title directly (no brand suffix). Google appends brand
+// from og:site_name when relevant. Yoast title is only used if it differs from
+// Yoast's default "Title - Site" pattern (i.e. has been customized).
+const yoastDefaultTitle = `${post.title} - Lebonreveil.com`;
+const yoastIsCustom =
+  post.seo?.title &&
+  decodeHtmlEntities(post.seo.title) !== decodeHtmlEntities(yoastDefaultTitle);
+const seoTitle = yoastIsCustom
+  ? decodeHtmlEntities(post.seo!.title!)
+  : decodeHtmlEntities(post.title);
 const seoDesc = post.seo?.metaDesc
   ? decodeHtmlEntities(post.seo.metaDesc)
   : stripHtml(post.excerpt).slice(0, 160);
