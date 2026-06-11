@@ -248,8 +248,10 @@ export async function fetchAllCategories(): Promise<WPCategory[]> {
       }
     }
   `);
-  // Filter out "Uncategorized"
-  return data.categories.nodes.filter((c) => c.slug !== "uncategorized");
+  // Filter out the default "Uncategorized" category — this WP uses the French
+  // slug "non-classe" (not the English "uncategorized"), so exclude both.
+  const DEFAULT_SLUGS = new Set(["uncategorized", "non-classe"]);
+  return data.categories.nodes.filter((c) => !DEFAULT_SLUGS.has(c.slug));
 }
 
 export async function fetchRelatedPosts(

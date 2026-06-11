@@ -28,6 +28,9 @@ export default defineConfig({
       destination:
         "/sieste-ideale-pourquoi-26-minutes-est-le-chiffre-magique-et-60-minutes-une-catastrophe/",
     },
+    // Catégorie "Non classé" vidée (27 posts reclassés 2026-06-11) — insurance
+    // si Google avait indexé ce hub fin (la page 404 sinon).
+    "/categorie/non-classe/": { status: 301, destination: "/" },
   },
   integrations: [],
   vite: {
