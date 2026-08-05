@@ -10,6 +10,7 @@ import RelatedPosts from "../components/RelatedPosts.astro";
 import AuthorBio from "../components/AuthorBio.astro";
 import ShopifyEncart from "../components/ShopifyEncart.astro";
 import { siteConfig } from "../config/site";
+import { tagShopLinksInHtml } from "../lib/shop";
 import {
   fetchAllPostSlugs,
   fetchPostBySlug,
@@ -49,8 +50,8 @@ const relatedPosts = category
   ? await fetchRelatedPosts(category.slug, post.slug, 4)
   : [];
 
-// Extract TOC and inject heading IDs
-const { toc, htmlWithIds } = extractToc(post.content);
+// Extract TOC and inject heading IDs (shop links in the body are UTM-tagged first)
+const { toc, htmlWithIds } = extractToc(tagShopLinksInHtml(post.content));
 const readingTime = estimateReadingTime(post.content);
 
 // Split content at a strategic H2 for mid-article product CTA

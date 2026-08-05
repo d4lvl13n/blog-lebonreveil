@@ -4,6 +4,7 @@
  * When the user scrolls past, a compact popup version
  * appears fixed in the bottom-right corner.
  */
+import { shopLink } from "../lib/shop";
 
 const products = [
   {
@@ -51,7 +52,7 @@ const products = [
   <div class="grid grid-cols-3 gap-4">
     {products.map((product) => (
       <a
-        href={product.url}
+        href={shopLink(product.url, "encart-inline")}
         target="_blank"
         rel="noopener"
         class="group flex flex-col overflow-hidden rounded-xl border border-brand-200 bg-white hover:border-accent-400 hover:shadow-md transition-all"
@@ -103,7 +104,7 @@ const products = [
   <div class="flex flex-col gap-1 p-2 max-h-72 overflow-y-auto">
     {products.map((product) => (
       <a
-        href={product.url}
+        href={shopLink(product.url, "encart-popup")}
         target="_blank"
         rel="noopener"
         class="group flex items-center gap-3 rounded-lg px-2 py-1.5 hover:bg-brand-50 transition-colors"

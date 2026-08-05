@@ -1,5 +1,6 @@
 ---
 import { siteConfig } from "../config/site";
+import { shopLink } from "../lib/shop";
 ---
 
 <footer class="border-t border-brand-200 bg-white">
@@ -10,7 +11,7 @@ import { siteConfig } from "../config/site";
         <p>&copy; {new Date().getFullYear()} {siteConfig.name}. Tous droits réservés.</p>
       </div>
       <div class="flex gap-6">
-        <a href={siteConfig.shopUrl} class="hover:text-brand-700 transition-colors" target="_blank" rel="noopener">
+        <a href={shopLink(siteConfig.shopUrl, "footer")} class="hover:text-brand-700 transition-colors" target="_blank" rel="noopener">
           Boutique
         </a>
         <a href="/" class="hover:text-brand-700 transition-colors">
